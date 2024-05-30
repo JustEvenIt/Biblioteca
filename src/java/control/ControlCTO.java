@@ -1,11 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package control;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,85 +9,115 @@ import java.util.List;
 import modelo.dao.LibroDAO;
 import modelo.dto.LibroDTO;
 
-/**
- *
- * @author Estudiante
- */
 public class ControlCTO extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String menu = request.getParameter("menu");
         String accion = request.getParameter("accion");
+        String actualizar = request.getParameter("btnActualizar");
+        String eliminar = request.getParameter("btnEliminar");
+        String insertar = request.getParameter("btnInsertar");
+        String consultar = request.getParameter("btnConsultar");
 
-        switch (menu) {
-            case ("Libros"): {
-                LibroDAO dao = new LibroDAO();
-                if (accion.equalsIgnoreCase("Listar")) {
+        LibroDAO dao = new LibroDAO();
+
+        
+            if (menu != null && menu.equals("Libros")) {
+
+                if (accion != null && accion.equalsIgnoreCase("Listar")) {
                     List<LibroDTO> lista = dao.readAll();
                     request.setAttribute("lista", lista);
                     request.getRequestDispatcher("libro_vta.jsp").forward(request, response);
-                } else {
-                    request.getRequestDispatcher("error.html").forward(request, response);
-
+                    return;
                 }
-                break;
+
+                if (actualizar != null && actualizar.equalsIgnoreCase("Actualizar")) {
+                    try {
+                        long isbnAct = Long.parseLong(request.getParameter("idAct"));
+                        String nombreAct = request.getParameter("nombreAct");
+                        String autorAct = request.getParameter("autorAct");
+                        String editorialAct = request.getParameter("editorialAct");
+                        int anioAct = Integer.parseInt(request.getParameter("anioAct"));
+
+                        LibroDTO actualizarLibro = new LibroDTO(isbnAct, nombreAct, autorAct, editorialAct, anioAct);
+                        if (dao.update(actualizarLibro)) {
+                            
+                        } else {
+                            request.getRequestDispatcher("error.html").forward(request, response);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error de formato numérico: " + e.getMessage());
+                        request.getRequestDispatcher("error.html").forward(request, response);
+                    }
+                    return;
+                }
+
+                if (eliminar != null && eliminar.equalsIgnoreCase("Eliminar")) {
+                    try {                          
+                        long isbnDel = Long.parseLong(request.getParameter("idDel"));
+                        if (dao.delete(isbnDel)) {
+                        } else {
+                            request.getRequestDispatcher("error.html").forward(request, response);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error de formato numérico: " + e.getMessage());
+                        request.getRequestDispatcher("error.html").forward(request, response);
+                    }
+                    return;
+                }
+
+                if (insertar != null && insertar.equalsIgnoreCase("Insertar")) {
+                    try {
+                        long idIns = Long.parseLong(request.getParameter("idIns"));
+                        String nombreIns = request.getParameter("nombreIns");
+                        String autorIns = request.getParameter("autorIns");
+                        String editorialIns = request.getParameter("editorialIns");
+                        int anioIns = Integer.parseInt(request.getParameter("anioIns"));
+
+                        LibroDTO nuevoLibro = new LibroDTO(idIns, nombreIns, autorIns, editorialIns, anioIns);
+                        if (dao.create(nuevoLibro)) {
+                        } else {
+                            request.getRequestDispatcher("error.html").forward(request, response);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error de formato numérico: " + e.getMessage());
+                        request.getRequestDispatcher("error.html").forward(request, response);
+                    }
+                    
+                }
+
+                if (consultar != null && consultar.equalsIgnoreCase("Consultar")) {
+                    try {
+                        long isbnCon = Long.parseLong(request.getParameter("idCon"));
+                        
+                        LibroDTO libro=new LibroDTO(isbnCon);
+                        List<LibroDTO> lista;
+                        lista= dao.read(libro);
+                        request.setAttribute("lista", lista);
+                        request.getRequestDispatcher("libro_vta.jsp").forward(request, response);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error de formato numérico: " + e.getMessage());
+                        request.getRequestDispatcher("error.html").forward(request, response);
+                    }                
             }
-            default: {
-                request.getRequestDispatcher("error.html").forward(request, response);
-
             }
-
-        }
-
     }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+   
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
-
+    }
 }
+

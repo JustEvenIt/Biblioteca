@@ -14,11 +14,11 @@ public interface Contrato<Cualquiercosa> {
 
     boolean create(Cualquiercosa nuevo);
 
-    public boolean delete(Object item);
+    public boolean delete(Long id);
 
     public boolean update(Cualquiercosa filter);
     
-    public Cualquiercosa read(Cualquiercosa filter);
+    public List<Cualquiercosa> read(Cualquiercosa filter);
 
     public List<Cualquiercosa> readAll();
     

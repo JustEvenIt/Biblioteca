@@ -73,16 +73,7 @@ public class LibroDTO {
         this.anio = anio;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 13 * hash + (int) (this.isbn ^ (this.isbn >>> 32));
-        hash = 13 * hash + Objects.hashCode(this.nombre);
-        hash = 13 * hash + Objects.hashCode(this.autor);
-        hash = 13 * hash + Objects.hashCode(this.editorial);
-        hash = 13 * hash + this.anio;
-        return hash;
-    }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -109,6 +100,17 @@ public class LibroDTO {
             return false;
         }
         return Objects.equals(this.editorial, other.editorial);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (int) (this.isbn ^ (this.isbn >>> 32));
+        hash = 29 * hash + Objects.hashCode(this.nombre);
+        hash = 29 * hash + Objects.hashCode(this.autor);
+        hash = 29 * hash + Objects.hashCode(this.editorial);
+        hash = 29 * hash + this.anio;
+        return hash;
     }
 
     @Override

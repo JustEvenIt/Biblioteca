@@ -30,22 +30,88 @@ public class LibroDAO implements Contrato<LibroDTO> {
 
     @Override
     public boolean create(LibroDTO nuevo) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        PreparedStatement psnt;
+        try {
+            psnt = con.cnn.prepareStatement(SQL_INSERT);
+            psnt.setLong(1, nuevo.getIsbn());
+            psnt.setString(2, nuevo.getNombre());
+            psnt.setString(3, nuevo.getAutor());
+            psnt.setString(4, nuevo.getEditorial());
+            psnt.setInt(5, nuevo.getAnio());
+            return 1==psnt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("Error al consultar Libro " + ex.getMessage());
+        }    
+        return false;
     }
+    
 
     @Override
-    public boolean delete(Object item) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean delete(Long id) {
+            PreparedStatement psnt;
+        try {
+            psnt = con.cnn.prepareStatement(SQL_DELETE);
+            psnt.setLong(1, id);
+            int filasAfectadas=psnt.executeUpdate();
+            if (filasAfectadas > 0) {
+                return true;
+            } else {
+            System.out.println("Error al eliminar Libro ");
+            return false;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error al borrar Libro " + ex.getMessage());
+        }    
+        return false;
+
     }
 
     @Override
     public boolean update(LibroDTO filter) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    PreparedStatement psnt;
+        try {
+            psnt = con.cnn.prepareStatement(SQL_UPDATE);
+            psnt.setString(1, filter.getNombre());
+            psnt.setString(2, filter.getAutor());
+            psnt.setString(3, filter.getEditorial());
+            psnt.setInt(4, filter.getAnio());
+            psnt.setLong(5, filter.getIsbn());
+            int filasAfectadas=psnt.executeUpdate();
+            if (filasAfectadas > 0) {
+                return true;
+            } else {
+            System.out.println("Error al consultar Libro ");
+            return false;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error al consultar Libro " + ex.getMessage());
+        }    
+        return false;
+        
     }
 
     @Override
-    public LibroDTO read(LibroDTO filter) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<LibroDTO> read(LibroDTO filter) {
+        List<LibroDTO> lista = null;
+        PreparedStatement psnt;
+        try {
+            psnt = con.cnn.prepareStatement(SQL_READ);
+            psnt.setLong(1, filter.getIsbn());
+            ResultSet rs = psnt.executeQuery();
+            lista = new ArrayList<LibroDTO>();
+            while (rs.next()) {
+                LibroDTO libro = new LibroDTO(
+                        rs.getLong("isbn"),
+                        rs.getString("nombre"),
+                        rs.getString("autor"),
+                        rs.getString("editorial"),
+                        rs.getInt("anio"));
+                lista.add(libro);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error al consultar Libro " + ex.getMessage());
+        }
+        return lista;
     }
 
     @Override
@@ -69,14 +135,6 @@ public class LibroDAO implements Contrato<LibroDTO> {
             System.out.println("Error al consultar Libro " + ex.getMessage());
         }
         return lista;
-    }
-    
-    public boolean update() {
-        
-        List<LibroDTO> lista = null;
-        PreparedStatement psnt;
-        
-        return true;
     }
 
 }
